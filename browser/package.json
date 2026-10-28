@@ -1,0 +1,10 @@
+{
+  "name": "chessreel-browser-publisher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Facebook Reels posting for ChessReel, driven through Meta Business Suite's composer. Facebook only — Instagram and YouTube stay on their own APIs.",
+  "main": "MetaReelPublisher.js",
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

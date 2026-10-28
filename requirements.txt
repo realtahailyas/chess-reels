@@ -1,0 +1,24 @@
+python-chess>=1.999
+Pillow>=10.0.0
+numpy>=1.24.0
+scipy>=1.11.0
+pandas>=2.0.0
+edge-tts>=6.1.0
+requests>=2.31.0
+zstandard>=0.22.0
+
+# Optional. cairosvg gives the reference SVG rasterizer; without a working
+# Cairo system library the pipeline falls back to the bundled PIL renderer.
+cairosvg>=2.7.0
+
+piper-tts>=1.6.0       # offline neural voice (tier 2, used when edge-tts is blocked)
+openai>=1.0.0          # captions + YouTube titles
+
+# Publishing (publish.py) — FB/IG post over requests (already above);
+# YouTube needs Google's client libs, plyer gives a free offline failure
+# toast, python-dotenv loads .env for the unattended Task Scheduler run.
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+plyer>=2.1.0
+python-dotenv>=1.0.0
