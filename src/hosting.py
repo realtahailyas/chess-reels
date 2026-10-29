@@ -21,10 +21,9 @@ import config
 
 API_ROOT = "https://api.github.com"
 
-# Commits written through the Contents API are attributed to a bot identity,
-# not the token owner, so automated status/CDN writes stay off the owner's
-# contribution graph.
-BOT_IDENTITY = {"name": "chessreel-bot", "email": "chessreel-bot@users.noreply.github.com"}
+# Reel uploads are committed as the token owner: one commit per published
+# reel. High-frequency status writes use a bot identity instead
+# (see status_bridge.BOT_IDENTITY).
 
 
 class HostingError(RuntimeError):
@@ -66,8 +65,6 @@ def push(video_path, puzzle_id: str) -> str:
         "message": f"reel: {puzzle_id}",
         "content": content_b64,
         "branch": config.GITHUB_BRANCH,
-        "author": BOT_IDENTITY,
-        "committer": BOT_IDENTITY,
     }
     if sha:
         body["sha"] = sha
