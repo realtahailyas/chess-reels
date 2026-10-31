@@ -159,7 +159,7 @@ SLOT_TZ = "America/New_York"
 #   It is clear of the shorts, whose Facebook posts on the same Chrome
 #   profile run at about xx:02-xx:06 around 05:00 and 07:00.
 FACEBOOK = {
-    "enabled": True,
+    "enabled": False,              # paused by the owner: no reel renders, no Page posts
     "brand": "tahachess",          # whose YouTube games it follows (lockup comes from BRANDS)
     "account": "tahachesstv",      # config.ACCOUNTS key: Taha Chess TV's Page
     "slot_pkt": "05:30",

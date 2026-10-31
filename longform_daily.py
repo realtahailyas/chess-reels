@@ -90,6 +90,27 @@ def entries(led, brand, status=None):
             and (status is None or v["status"] == status)]
 
 
+def drop_lost_builds(led: dict, dry_run=False) -> list:
+    """Forget built videos and reels whose files are gone from disk.
+
+    A `built` entry whose folder was deleted would otherwise be picked as the
+    next upload on every run and fail with FileNotFoundError, blocking its
+    channel for good. Dropping the entry puts the game back in the queue; its
+    engine analysis is cached, so the re-render only costs a few minutes.
+    """
+    lost = [k for k, v in led["videos"].items()
+            if v["status"] == "built" and v.get("dir")
+            and not all((ROOT / v["dir"] / f).is_file() for f in ("video.mp4", "meta.json"))]
+    for key in lost:
+        log.warning("%s: files missing from %s — back in the queue for a re-render",
+                    key, led["videos"][key]["dir"])
+        if not dry_run:
+            del led["videos"][key]
+    if lost and not dry_run:
+        publisher.save_ledger(led)
+    return lost
+
+
 def build_next(led: dict, brand: str, dry_run: bool) -> dict | None:
     used = publisher.used_game_ids(led)
     tries = 0
@@ -350,6 +371,7 @@ def main():
     try:
         now = datetime.now(timezone.utc)
         led = publisher.load_ledger()
+        drop_lost_builds(led, dry_run=args.dry_run)
         if args.prefetch:
             for brand in ([args.brand] if args.brand else sorted(C.BRANDS)):
                 n = prefetch(led, brand, args.prefetch, time_budget_s=6 * 3600, dry_run=args.dry_run)

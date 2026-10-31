@@ -181,5 +181,29 @@ class FacebookRules(unittest.TestCase):
             post.assert_not_called()
 
 
+class LostBuilds(unittest.TestCase):
+    """A built video whose folder was deleted must not block its channel."""
+
+    def test_missing_files_return_the_game_to_the_queue(self):
+        import tempfile
+        from unittest import mock
+        import longform_daily
+        with tempfile.TemporaryDirectory() as tmp:
+            kept = Path(tmp) / "kept"
+            kept.mkdir()
+            (kept / "video.mp4").write_bytes(b"x")
+            (kept / "meta.json").write_text("{}")
+            led = {"videos": {
+                "gone_tchess": {"game": "gone", "brand": "tchess", "status": "built", "dir": "gone"},
+                "kept_tchess": {"game": "kept", "brand": "tchess", "status": "built", "dir": "kept"},
+                "old_tchess": {"game": "old", "brand": "tchess", "status": "published", "dir": "old"},
+            }, "playlists": {}}
+            with mock.patch.object(longform_daily, "ROOT", Path(tmp)), \
+                 mock.patch.object(longform_daily.publisher, "save_ledger") as save:
+                self.assertEqual(longform_daily.drop_lost_builds(led), ["gone_tchess"])
+                save.assert_called_once()
+            self.assertEqual(sorted(led["videos"]), ["kept_tchess", "old_tchess"])
+
+
 if __name__ == "__main__":
     unittest.main()
